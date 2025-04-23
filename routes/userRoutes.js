@@ -6,7 +6,9 @@ const {
   getUserProfile, 
   requestPasswordReset, 
   verifyOTP, 
-  resetPassword 
+  resetPassword,
+  getAllCategories,
+  getBlogsByUser
 } = require('../controller/userController');
 const { authenticate } = require('../middleware/authentication');
 
@@ -23,5 +25,10 @@ router.get('/profile', authenticate, getUserProfile);
 router.post('/forgot-password', requestPasswordReset);
 router.post('/verify-otp', verifyOTP);
 router.patch('/reset-password', resetPassword);
+
+// Get all categories (admin functionality)
+router.get('/categories', getAllCategories);
+
+router.get('/blogs/:userNumber', authenticate, getBlogsByUser);
 
 module.exports = router;

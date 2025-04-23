@@ -86,6 +86,14 @@ exports.updateBlog = async (req, res) => {
       return res.status(404).json({ message: 'Blog not found' });
     }
 
+    // 🚨 Check if user is owner or admin
+    const isOwner = blog.createdBy === req.user.userNumber;
+    const isAdmin = req.user.role === 'admin';
+
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({ message: 'You are not authorized to update this blog' });
+    }
+
     const { title, description, category } = req.body;
 
     if (title) blog.title = title;
@@ -115,6 +123,14 @@ exports.deleteBlog = async (req, res) => {
       return res.status(404).json({ message: 'Blog not found' });
     }
 
+    // 🚨 Check if user is owner or admin
+    const isOwner = blog.createdBy === req.user.userNumber;
+    const isAdmin = req.user.role === 'admin';
+
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({ message: 'You are not authorized to delete this blog' });
+    }
+
     await blog.deleteOne();
 
     return res.status(200).json({ message: 'Blog deleted successfully' });
@@ -123,3 +139,4 @@ exports.deleteBlog = async (req, res) => {
     return res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+

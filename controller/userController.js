@@ -1,8 +1,10 @@
 const User = require('../models/userModel');
+const Blog = require('../models/blogModel');
 const jwt = require('jsonwebtoken');
 const { registerValidation, loginValidation, forgotPasswordValidation, verifyOTPValidation, resetPasswordValidation } = require('../validation/validation');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
+const Category = require('../models/categoryModel');
 
 // Register a new user
 const registerUser = async (req, res) => {
@@ -259,6 +261,34 @@ const resetPassword = async (req, res) => {
   }
 };
 
+// Get all categories (admin functionality)
+const getAllCategories = async (req, res) => {
+  try {
+    const categories = await Category.find().sort({ createdAt: -1 });
+    return res.status(200).json({ categories });
+  } catch (error) {
+    return res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+const getBlogsByUser = async (req, res) => {
+  try {
+    const { userNumber } = req.params;
+
+    // Find blogs by the specific userNumber (createdBy field)
+    const blogs = await Blog.find({ createdBy: userNumber }).sort({ createdAt: -1 });
+
+    if (blogs.length === 0) {
+      return res.status(404).json({ message: `No blogs found for user ${userNumber}` });
+    }
+
+    return res.status(200).json({ blogs });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
 
 module.exports = {
   registerUser,
@@ -266,5 +296,7 @@ module.exports = {
   getUserProfile,
   requestPasswordReset,
   verifyOTP,
-  resetPassword
+  resetPassword,
+  getAllCategories,
+  getBlogsByUser 
 };

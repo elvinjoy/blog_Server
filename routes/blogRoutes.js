@@ -9,6 +9,7 @@ router.post('/create', blogAuth, upload.array('images', 2), blogController.creat
 
 router.get('/all-blogs', blogController.getAllBlogs);
 router.get('/blogs/:blogId', blogController.getBlogById);
+
 router.put('/blogs/:blogId', blogAuth, upload.array('images', 2), blogController.updateBlog);
 router.delete('/blogs/:blogId', blogAuth, blogController.deleteBlog);
 
