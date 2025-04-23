@@ -5,6 +5,8 @@ require('dotenv').config();
 
 // Import routes
 const userRoutes = require('./routes/userRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+const blogRoutes = require('./routes/blogRoutes');
 
 // Initialize express app
 const app = express();
@@ -16,13 +18,15 @@ app.use(express.urlencoded({ extended: true }));
 
 // Connect to MongoDB
 const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/blog-app';
-console.log('Attempting to connect to MongoDB with URI:', mongoURI);
+console.log('Attempting to connect to MongoDB with URI:');
 mongoose.connect(mongoURI)
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => console.error('Could not connect to MongoDB', err));
 
 // Routes
 app.use('/api/users', userRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/blog', blogRoutes); // Register blog-related routes
 
 // Default route
 app.get('/', (req, res) => {

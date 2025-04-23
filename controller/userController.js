@@ -217,48 +217,39 @@ const verifyOTP = async (req, res) => {
 // Reset password
 const resetPassword = async (req, res) => {
   try {
-    // Validate input
     const { error } = resetPasswordValidation(req.body);
     if (error) {
       return res.status(400).json({ message: error.details[0].message });
     }
 
     const { email, password } = req.body;
-
-    // Verify the reset token from the Authorization header
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({ message: 'Reset token is required' });
     }
 
     const resetToken = authHeader.split(' ')[1];
-    
+
     try {
-      // Verify and decode the token
       const decoded = jwt.verify(resetToken, process.env.JWT_SECRET);
-      
-      // Check if token is for password reset and matches the email
+
       if (decoded.purpose !== 'password-reset' || decoded.email !== email) {
         return res.status(401).json({ message: 'Invalid reset token' });
       }
-      
-      // Find user by email
+
       const user = await User.findOne({ email });
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
       }
-      
-      // Hash the new password
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(password, salt);
-      
-      // Update user password and clear OTP fields
-      user.password = hashedPassword;
+
+      user.password = password;
+
+      // Clear OTP fields
       user.resetPasswordOTP = null;
       user.resetPasswordOTPExpiry = null;
-      
-      await user.save();
-      
+
+      await user.save(); // pre('save') will automatically hash
+
       return res.status(200).json({ message: 'Password reset successful' });
     } catch (error) {
       return res.status(401).json({ message: 'Invalid or expired reset token' });
@@ -267,6 +258,7 @@ const resetPassword = async (req, res) => {
     return res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
 
 module.exports = {
   registerUser,

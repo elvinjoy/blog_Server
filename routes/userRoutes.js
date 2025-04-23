@@ -22,6 +22,6 @@ router.get('/profile', authenticate, getUserProfile);
 // Forgot password flow
 router.post('/forgot-password', requestPasswordReset);
 router.post('/verify-otp', verifyOTP);
-router.post('/reset-password', resetPassword);
+router.patch('/reset-password', resetPassword);
 
 module.exports = router;
