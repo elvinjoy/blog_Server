@@ -26,10 +26,15 @@ const blogSchema = new mongoose.Schema({
   createdBy: {
     type: String, 
     required: true, 
-  }, // 👈 NEW: Save user's custom number like "USER004"
+  }, // Save user's custom number like "USER004"
   createdAt: {
     type: Date,
     default: Date.now,
+  },
+  // Add likesCount field to track the number of likes
+  likesCount: {
+    type: Number,
+    default: 0
   }
 });
 

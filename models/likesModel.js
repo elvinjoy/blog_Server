@@ -1,7 +1,6 @@
-// models/commentModel.js
 const mongoose = require('mongoose');
 
-const commentSchema = new mongoose.Schema({
+const likeSchema = new mongoose.Schema({
   blogId: {
     type: String,
     required: true
@@ -11,9 +10,6 @@ const commentSchema = new mongoose.Schema({
     required: true
   },
   username: {
-    type: String
-  },
-  content: {
     type: String,
     required: true
   },
@@ -23,4 +19,9 @@ const commentSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('Comment', commentSchema);
+// Create a compound index to ensure a user can only like a blog once
+likeSchema.index({ blogId: 1, userNumber: 1 }, { unique: true });
+
+const Like = mongoose.model('Like', likeSchema);
+
+module.exports = Like;

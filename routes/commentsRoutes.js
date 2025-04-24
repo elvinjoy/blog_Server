@@ -1,13 +1,16 @@
+// routes/commentRoutes.js
 const express = require('express');
 const router = express.Router();
-const commentsController = require('../controller/commentsController');
-const commentAuth = require('../middleware/commentAuth');
+const commentController = require('../controller/commentsController');
+const authenticate = require('../middleware/commentAuthentication');
 
-// Route to create a new comment
-router.post('/addcomment', commentsController.createComment);
+// Create comment (protected route)
+router.post('/addcomment/:id', authenticate, commentController.createComment);
 
-// Route to get comments for a specific blog post
-router.get('getcomments/:blogId', commentsController.getCommentsByBlogId);
+// Get comments for a blog
+router.get('/:blogId', commentController.getCommentsByBlogId);
 
-router.delete('/deletecomment/:commentId', commentsController.deleteComment);
+// Delete comment (protected route)
+router.delete('/delete/:commentId', authenticate, commentController.deleteComment);
+
 module.exports = router;

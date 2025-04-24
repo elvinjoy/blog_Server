@@ -7,6 +7,8 @@ require('dotenv').config();
 const userRoutes = require('./routes/userRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const blogRoutes = require('./routes/blogRoutes');
+const commentRoutes = require('./routes/commentsRoutes');
+const likeRoutes = require('./routes/likesRoutes'); 
 
 // Initialize express app
 const app = express();
@@ -27,6 +29,7 @@ mongoose.connect(mongoURI)
 app.use('/api/users', userRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/blog', blogRoutes); // Register blog-related routes
+app.use('/api/blog', likeRoutes); // Register like-related routes
 
 // Default route
 app.get('/', (req, res) => {
