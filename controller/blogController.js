@@ -52,14 +52,38 @@ exports.createBlog = async (req, res) => {
 };
 
 exports.getAllBlogs = async (req, res) => {
+  const { page = 1, search, sort, category } = req.query;
+  const limit = 6;
+  const skip = (page - 1) * limit;
+
+  let query = {};
+  if (category) query.category = category;
+  if (search) query.title = { $regex: search, $options: 'i' };
+
   try {
-    const blogs = await Blog.find().sort({ createdAt: -1 });
-    return res.status(200).json({ blogs });
+    const blogs = await Blog.find(query)
+      .sort(
+        sort === 'atoz' ? { title: 1 } :
+        sort === 'ztoa' ? { title: -1 } :
+        { createdAt: -1 }
+      )
+      .skip(skip)
+      .limit(limit);
+
+    const totalBlogs = await Blog.countDocuments(query);
+
+    res.json({
+      blogs,
+      totalBlogs,
+      currentPage: Number(page),
+      totalPages: Math.ceil(totalBlogs / limit),
+    });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Server error', error: error.message });
+    console.error('Error fetching blogs:', error);
+    res.status(500).send('Server error');
   }
 };
+
 
 exports.getBlogById = async (req, res) => {
   try {
