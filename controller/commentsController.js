@@ -49,6 +49,41 @@ exports.getCommentsByBlogId = async (req, res) => {
   }
 };
 
+// Update a comment
+exports.updateComment = async (req, res) => {
+  try {
+    const { commentId } = req.params;
+    const { content } = req.body;
+
+    // Validate
+    if (!content || content.trim() === '') {
+      return res.status(400).json({ message: 'Comment content is required' });
+    }
+
+    // Find comment
+    const comment = await Comment.findById(commentId);
+
+    if (!comment) {
+      return res.status(404).json({ message: 'Comment not found' });
+    }
+
+    // Authorization check: only owner or admin can update
+    if (req.user.role !== 'admin' && comment.userNumber !== req.user.userNumber) {
+      return res.status(403).json({ message: 'Not authorized to update this comment' });
+    }
+
+    // Update content
+    comment.content = content;
+    const updatedComment = await comment.save();
+
+    res.status(200).json({ message: 'Comment updated successfully', comment: updatedComment });
+  } catch (error) {
+    console.error('Error updating comment:', error);
+    res.status(500).json({ message: 'Failed to update comment', error: error.message });
+  }
+};
+
+
 // Delete a comment (optional, for moderation)
 exports.deleteComment = async (req, res) => {
   try {

@@ -13,4 +13,6 @@ router.get('/:blogId', commentController.getCommentsByBlogId);
 // Delete comment (protected route)
 router.delete('/delete/:commentId', authenticate, commentController.deleteComment);
 
+router.put('/update/:commentId', authenticate,commentController.updateComment);
+
 module.exports = router;

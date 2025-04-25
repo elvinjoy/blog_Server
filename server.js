@@ -29,7 +29,8 @@ mongoose.connect(mongoURI)
 app.use('/api/users', userRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/blog', blogRoutes); // Register blog-related routes
-app.use('/api/blog', likeRoutes); // Register like-related routes
+app.use('/api/blog', likeRoutes); 
+app.use('/api/comments', commentRoutes); // Register like-related routes
 
 // Default route
 app.get('/', (req, res) => {

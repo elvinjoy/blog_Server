@@ -101,16 +101,31 @@ const loginAdmin = async (req, res) => {
 
 // Get all users (admin functionality)
 const getAllUsers = async (req, res) => {
-  const { search } = req.query;
+  const { search = '', page = 1, limit = 5 } = req.query;
+  const skip = (Number(page) - 1) * Number(limit);
+
   try {
-    const users = await User.find({
+    const query = {
       username: { $regex: search, $options: 'i' },
-    }).select('-password');
-    return res.status(200).json({ users });
+    };
+
+    const totalUsers = await User.countDocuments(query);
+    const users = await User.find(query)
+      .select('-password')
+      .skip(skip)
+      .limit(Number(limit));
+
+    return res.status(200).json({
+      users,
+      currentPage: Number(page),
+      totalPages: Math.ceil(totalUsers / limit),
+      totalUsers,
+    });
   } catch (error) {
     return res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
 
 // Get user by ID (admin functionality)
 const getUserById = async (req, res) => {
