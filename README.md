@@ -111,8 +111,6 @@ Live Demo:
 ```sh
 git clone https://github.com/elvinjoy/blog_client.git
 
-cd blog_client
-
 npm install
 
 npm run dev
@@ -122,8 +120,6 @@ npm run dev
 
 ```sh
 git clone https://github.com/elvinjoy/blog_Server.git
-
-cd blog_Server
 
 npm install
 
