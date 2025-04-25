@@ -1,5 +1,6 @@
 const Blog = require('../models/blogModel');
 const blogValidation = require('../validation/blogValidation');
+const category = require('../models/categoryModel');
 
 exports.createBlog = async (req, res) => {
   try {
@@ -14,7 +15,16 @@ exports.createBlog = async (req, res) => {
       return res.status(400).json({ message: 'Exactly 2 images are required' });
     }
 
-    const { title, description, category } = req.body;
+    const { title, description, category: selectedCategory } = req.body;
+
+    // ✅ Convert category to lowercase to match DB format
+    const categoryName = selectedCategory.toLowerCase();
+
+    // ✅ Check if selected category exists in DB
+    const existingCategory = await category.findOne({ name: categoryName });
+    if (!existingCategory) {
+      return res.status(400).json({ message: 'Selected category does not exist' });
+    }
 
     // Map uploaded images
     const images = req.files.map(file => `/uploads/${file.filename}`);
@@ -37,9 +47,9 @@ exports.createBlog = async (req, res) => {
       blogId,
       title,
       description,
-      category,
+      category: categoryName, // 👈 Use the lowercase category name
       images,
-      createdBy, // 👈 Save the user's custom number like "USER004"
+      createdBy,
     });
 
     await newBlog.save();
